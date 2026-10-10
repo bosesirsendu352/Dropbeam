@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#07090d">
+  <title>DropBeam — Private peer-to-peer file transfer</title>
+  <meta name="description" content="Send files directly between devices. End-to-end encrypted, no uploads, no accounts, no size limits.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="./" aria-label="DropBeam home">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="4.5" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><path d="M9 12h6" stroke-dasharray="1.5 3"/>
+      </svg>
+      <span>drop<b>beam</b></span>
+    </a>
+    <div class="status" id="status" data-state="idle" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span><span id="statusText">idle</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">// peer-to-peer · end-to-end encrypted</p>
+      <h1>Send files.<br><span>Straight to the device.</span></h1>
+      <p class="sub">No uploads, no accounts, no size limits. Files travel directly between browsers and never touch a server.</p>
+    </section>
+
+    <div class="card" id="unsupported" hidden>
+      <div class="panel"><p class="hint error">This browser doesn't support WebRTC data channels. Please use a recent Chrome, Edge, Firefox or Safari.</p></div>
+    </div>
+
+    <div class="card" id="app">
+      <div class="tabs" role="tablist" aria-label="Mode">
+        <button type="button" role="tab" id="tabSend" aria-selected="true" aria-controls="panelSend">Send</button>
+        <button type="button" role="tab" id="tabRecv" aria-selected="false" aria-controls="panelRecv" tabindex="-1">Receive</button>
+      </div>
+
+      <!-- SEND -->
+      <section class="panel" id="panelSend" role="tabpanel" aria-labelledby="tabSend">
+        <button type="button" class="drop" id="dropzone">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 16V4m0 0L8 8m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>
+          </svg>
+          <strong id="dropTitle">Drop files here</strong>
+          <span>or click to choose · any type · any size</span>
+        </button>
+        <input type="file" id="fileInput" multiple hidden>
+
+        <div class="share" id="shareBox" hidden>
+          <span class="label">Share this code</span>
+          <output class="code" id="codeOut" aria-live="polite">----</output>
+          <div class="row">
+            <button type="button" class="btn primary" id="copyLink">Copy link</button>
+            <button type="button" class="btn" id="copyCode">Copy code</button>
+          </div>
+          <p class="hint" id="sendHint">Waiting for the receiver…</p>
+        </div>
+
+        <div class="approve" id="approve" hidden role="alertdialog" aria-labelledby="approveTitle">
+          <p id="approveTitle"><strong>A device wants to connect.</strong> Only allow it if you shared your code with them.</p>
+          <div class="row">
+            <button type="button" class="btn primary" id="allowBtn">Allow</button>
+            <button type="button" class="btn" id="denyBtn">Deny</button>
+          </div>
+        </div>
+
+        <ul class="files" id="sendList"></ul>
+      </section>
+
+      <!-- RECEIVE -->
+      <section class="panel" id="panelRecv" role="tabpanel" aria-labelledby="tabRecv" hidden>
+        <form id="joinForm" autocomplete="off" novalidate>
+          <label class="label" for="codeIn">Sender's code</label>
+          <div class="row">
+            <input id="codeIn" class="code-in" type="text" inputmode="text" maxlength="9" spellcheck="false" autocapitalize="characters" autocomplete="off" placeholder="XXXX-XXXX">
+            <button type="submit" class="btn primary" id="joinBtn">Connect</button>
+          </div>
+        </form>
+        <p class="hint" id="recvHint"></p>
+        <label class="check" id="autoRow">
+          <input type="checkbox" id="autoAccept" checked>
+          <span>Auto-accept files under 100&nbsp;MB</span>
+        </label>
+        <ul class="files" id="recvList"></ul>
+      </section>
+    </div>
+
+    <ul class="features">
+      <li><b>E2E ENCRYPTED</b><span>WebRTC data channels are encrypted with DTLS. Only the two devices can read the data.</span></li>
+      <li><b>ZERO STORAGE</b><span>Nothing is uploaded or kept. Close the tab and the transfer is gone.</span></li>
+      <li><b>FAST</b><span>Direct device-to-device, limited only by your connection. Tiny static page.</span></li>
+    </ul>
+  </main>
+
+  <footer>
+    <span>Signaling only via PeerJS cloud — files never pass through it.</span>
+    <a id="srcLink" href="#" rel="noopener noreferrer" hidden>Source</a>
+  </footer>
+
+  <noscript><p class="noscript">DropBeam needs JavaScript to run.</p></noscript>
+
+  <script src="vendor/peerjs.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
